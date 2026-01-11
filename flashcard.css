@@ -1,0 +1,232 @@
+/* ==========================================
+   FLASHCARD MODE RENEWAL (v2 - Clean & Compact)
+   ========================================== */
+.flashcard-wrapper {
+    display: none;
+    width: 100%;
+    /* Flex center the card in the available space */
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    /* Start from top but centered horizontally */
+    padding-top: var(--spacing-md);
+}
+
+/* Hide when not active (override flex display) */
+body:not(:has(.flashcard-wrapper.active)) .flashcard-wrapper {
+    display: none !important;
+}
+
+/* Note: The above :has selector might be too modern for some environments? 
+   Actually, let's keep it simple. JS toggles .active on wrapper. */
+
+.flashcard-wrapper {
+    display: none;
+}
+
+.flashcard-wrapper.active {
+    display: flex;
+    justify-content: center;
+    perspective: 1000px;
+}
+
+.flip-card {
+    background-color: transparent;
+    width: 100%;
+    max-width: 480px;
+    /* Constrained width */
+    aspect-ratio: 4/3;
+    /* Standard card ratio */
+    min-height: 360px;
+    /* Fallback height */
+    perspective: 1000px;
+    cursor: pointer;
+    position: relative;
+    /* "Stack" effect bottom shadow */
+    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+    border-radius: var(--border-radius);
+}
+
+.flip-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+    /* Eloquent ease */
+    transform-style: preserve-3d;
+}
+
+.flip-card-inner.is-flipped {
+    transform: rotateY(180deg);
+}
+
+/* Common Face Styles */
+.flip-card-front,
+.flip-card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    /* Inner shadow for depth */
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.flip-card-back {
+    transform: rotateY(180deg);
+    background: linear-gradient(145deg, var(--bg-card), var(--bg-secondary));
+}
+
+/* Header */
+.flashcard-header {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Content */
+.flashcard-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-lg);
+    overflow-y: auto;
+    /* Scroll if text is huge */
+}
+
+/* Typography */
+.flashcard-question {
+    font-family: 'Inter', serif;
+    /* Maybe contrast font? Keeping Inter for now */
+    font-size: 1.5rem;
+    font-weight: 500;
+    line-height: 1.4;
+    color: var(--text-primary);
+    text-align: center;
+}
+
+.flashcard-answer-text {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #38ef7d;
+    margin-bottom: var(--spacing-md);
+    text-align: center;
+}
+
+.flashcard-context {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    opacity: 0.7;
+    margin-top: var(--spacing-sm);
+    padding-top: var(--spacing-sm);
+    border-top: 1px solid var(--border-color);
+    width: 100%;
+    text-align: center;
+}
+
+/* Footer / Hint */
+.flashcard-footer {
+    padding: var(--spacing-sm);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    background: rgba(0, 0, 0, 0.1);
+    border-top: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+/* Evaluation Controls - Integrated into bottom of Back Face */
+.flashcard-controls {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+.flashcard-footer:has(.flashcard-controls) {
+    padding: 0;
+    background: transparent;
+    height: 70px;
+    /* Fixed height for controls */
+}
+
+.eval-btn {
+    flex: 1;
+    border: none;
+    border-top: 1px solid var(--border-color);
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 2px;
+    cursor: pointer;
+    transition: background 0.2s;
+    position: relative;
+}
+
+.eval-btn:not(:last-child) {
+    border-right: 1px solid var(--border-color);
+}
+
+.eval-key {
+    font-size: 0.65rem;
+    opacity: 0.4;
+    font-weight: 400;
+}
+
+/* Hover States for Controls */
+.eval-btn:hover {
+    color: white;
+}
+
+.eval-btn--again:hover {
+    background: rgba(235, 51, 73, 0.2);
+    border-top-color: #eb3349;
+}
+
+.eval-btn--hard:hover {
+    background: rgba(255, 159, 67, 0.2);
+    border-top-color: #ff9f43;
+}
+
+.eval-btn--good:hover {
+    background: rgba(56, 239, 125, 0.2);
+    border-top-color: #38ef7d;
+}
+
+.eval-btn--easy:hover {
+    background: rgba(79, 172, 254, 0.2);
+    border-top-color: #4facfe;
+}
+
+
+/* Mobile Optimization */
+@media (max-width: 600px) {
+    .flip-card {
+        max-width: 100%;
+        margin: 0 var(--spacing-md);
+        /* Add side margins */
+        aspect-ratio: auto;
+        min-height: 450px;
+        /* Vertical space for mobile */
+    }
+}

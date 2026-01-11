@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="cs">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Organizace informací - Kvíz</title>
+    <meta name="description"
+        content="Komplexní kvízová aplikace s 246 otázkami o organizaci informací pro přípravu na zkoušku.">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="flashcard.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header" id="header">
+        <h1 class="header__title">📚 Organizace informací</h1>
+        <p class="header__subtitle">Kvízová aplikace</p>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <!-- Home Screen -->
+        <section class="screen screen--home active" id="screen-home">
+            <div class="home">
+                <div class="home__stats">
+                    <div class="stat-card">
+                        <span class="stat-card__number" id="total-questions">246</span>
+                        <span class="stat-card__label">Otázek</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-card__number" id="failed-count">0</span>
+                        <span class="stat-card__label">Neumím</span>
+                    </div>
+                </div>
+
+                <h2 class="home__title">Vyber režim</h2>
+
+                <div class="mode-buttons">
+                    <button class="mode-btn mode-btn--practice" data-mode="practice">
+                        <span class="mode-btn__icon">🎯</span>
+                        <span class="mode-btn__title">Procvičování</span>
+                        <span class="mode-btn__desc">Okamžitá zpětná vazba</span>
+                    </button>
+
+                    <button class="mode-btn mode-btn--test" data-mode="test">
+                        <span class="mode-btn__icon">📝</span>
+                        <span class="mode-btn__title">Testový režim</span>
+                        <span class="mode-btn__desc">Vyhodnocení na konci</span>
+                    </button>
+
+                    <button class="mode-btn mode-btn--random" data-mode="random">
+                        <span class="mode-btn__icon">🎲</span>
+                        <span class="mode-btn__title">Náhodné pořadí</span>
+                        <span class="mode-btn__desc">Promíchané otázky</span>
+                    </button>
+
+                    <button class="mode-btn mode-btn--failed" data-mode="failed" id="btn-failed">
+                        <span class="mode-btn__icon">❌</span>
+                        <span class="mode-btn__title">Neumím</span>
+                        <span class="mode-btn__desc">Procvičuj chyby</span>
+                    </button>
+
+                    <button class="mode-btn mode-btn--flashcard" data-mode="flashcard">
+                        <span class="mode-btn__icon">🧠</span>
+                        <span class="mode-btn__title">Kartičky</span>
+                        <span class="mode-btn__desc">Active Recall (nejúčinnější)</span>
+                    </button>
+                </div>
+
+                <div class="home__settings">
+                    <label class="setting setting--toggle">
+                        <span class="setting__label">Číst otázky nahlas 🗣️</span>
+                        <input type="checkbox" id="tts-toggle" class="setting__checkbox">
+                        <span class="setting__slider"></span>
+                    </label>
+
+                    <div id="tts-controls" class="tts-controls hidden"
+                        style="margin-top: 1rem; padding-left: 1rem; border-left: 2px solid var(--border-color);">
+                        <label class="setting">
+                            <span class="setting__label">Hlas:</span>
+                            <select class="setting__select" id="voice-select"
+                                style="width: 100%; margin-top: 0.5rem;"></select>
+                        </label>
+                        <label class="setting" style="display: block; margin-top: 1rem;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                <span class="setting__label">Rychlost:</span>
+                                <span id="rate-value" class="setting__value">1.0x</span>
+                            </div>
+                            <input type="range" id="rate-range" min="0.5" max="2.0" step="0.1" value="1.0"
+                                style="width: 100%;">
+                        </label>
+                    </div>
+
+                    <label class="setting">
+                        <span class="setting__label">Kategorie:</span>
+                        <select class="setting__select" id="category-select">
+                            <option value="all">Všechny kategorie</option>
+                        </select>
+                    </label>
+
+                    <label class="setting">
+                        <span class="setting__label">Počet otázek:</span>
+                        <select class="setting__select" id="question-count">
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="30">30</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                            <option value="all" selected>Všechny</option>
+                        </select>
+                    </label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quiz Screen -->
+        <section class="screen screen--quiz" id="screen-quiz" style="display: none;">
+            <div class="quiz">
+                <div class="quiz__progress">
+                    <div class="progress-bar">
+                        <div class="progress-bar__fill" id="progress-fill"></div>
+                    </div>
+                    <div class="progress-info">
+                        <span class="progress-count">
+                            <span id="current-question">1</span><span class="progress-sep">/</span><span
+                                id="total-quiz-questions">10</span>
+                        </span>
+                        <span class="progress-info__score" id="score-display">Skóre: 0</span>
+                    </div>
+                </div>
+
+                <!-- Relocated Hint Section -->
+                <button class="hint-btn" id="hint-btn">
+                    <span>💡</span> Nápověda
+                </button>
+
+                <div class="quiz__hint hidden" id="hint-container">
+                    <p id="hint-text">Nápověda bude zde...</p>
+                </div>
+
+                <!-- Flip Card Structure -->
+                <!-- Wrapper for purely specific flashcard styling -->
+                <div class="flashcard-wrapper" id="flashcard-wrapper">
+                    <div class="flip-card" id="flip-card">
+                        <div class="flip-card-inner" id="flashcard-inner">
+
+                            <!-- FRONT FACE -->
+                            <div class="flip-card-front">
+                                <div class="flashcard-header">
+                                    <div class="quiz__category" id="question-category">Tematický blok</div>
+                                </div>
+
+                                <div class="flashcard-content">
+                                    <h3 class="flashcard-question" id="flashcard-question-front">
+                                        Text otázky...
+                                    </h3>
+                                </div>
+
+                                <div class="flashcard-footer">
+                                    <span class="flashcard-hint">Klikni nebo stiskni Mezerník pro otočení</span>
+                                </div>
+                            </div>
+
+                            <!-- BACK FACE -->
+                            <div class="flip-card-back">
+                                <div class="flashcard-header">
+                                    <div class="quiz__category">Správná odpověď</div>
+                                </div>
+
+                                <div class="flashcard-content">
+                                    <div class="flashcard-answer-text" id="flashcard-answer-text">
+                                        Správná odpověď...
+                                    </div>
+                                    <div class="flashcard-context" id="question-text-back">
+                                        (Původní otázka pro kontext)
+                                    </div>
+                                </div>
+
+                                <!-- Evaluation Controls (Inside Back Face) -->
+                                <div class="flashcard-footer">
+                                    <div class="flashcard-controls" id="flashcard-eval-container">
+                                        <button class="eval-btn eval-btn--again" id="eval-again">
+                                            <span class="eval-label">Zapomněl</span>
+                                            <span class="eval-key">1</span>
+                                        </button>
+                                        <button class="eval-btn eval-btn--hard" id="eval-hard">
+                                            <span class="eval-label">Těžké</span>
+                                            <span class="eval-key">2</span>
+                                        </button>
+                                        <button class="eval-btn eval-btn--good" id="eval-good">
+                                            <span class="eval-label">Dobré</span>
+                                            <span class="eval-key">3</span>
+                                        </button>
+                                        <button class="eval-btn eval-btn--easy" id="eval-easy">
+                                            <span class="eval-label">Snadné</span>
+                                            <span class="eval-key">4</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Standard Quiz Content (Hidden in Flashcard Mode) -->
+                <div id="standard-quiz-container">
+                    <div class="quiz__question" id="question-text">
+                        Text otázky bude zde...
+                    </div>
+
+                    <div class="quiz__answers" id="answers-container">
+                        <button class="answer-btn" onclick="app.selectAnswer(0)">
+                            <div class="answer-btn__letter">A</div>
+                            <div class="answer-btn__text">Odpověď A</div>
+                        </button>
+                        <button class="answer-btn" onclick="app.selectAnswer(1)">
+                            <div class="answer-btn__letter">B</div>
+                            <div class="answer-btn__text">Odpověď B</div>
+                        </button>
+                        <button class="answer-btn" onclick="app.selectAnswer(2)">
+                            <div class="answer-btn__letter">C</div>
+                            <div class="answer-btn__text">Odpověď C</div>
+                        </button>
+                        <button class="answer-btn" onclick="app.selectAnswer(3)">
+                            <div class="answer-btn__letter">D</div>
+                            <div class="answer-btn__text">Odpověď D</div>
+                        </button>
+                    </div>
+                </div>
+
+
+
+
+                <div class="quiz__explanation hidden" id="explanation-container">
+                    <h4>Vysvětlení:</h4>
+                    <p id="explanation-text">Vysvětlení bude zde...</p>
+                </div>
+
+                <div class="quiz__actions hidden" id="quiz-actions"
+                    style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                    <button class="action-btn action-btn--secondary" id="explanation-toggle-btn" style="flex: 1;">
+                        📖 Vysvětlení
+                    </button>
+                    <button class="action-btn action-btn--next" id="next-btn" style="flex: 1;">
+                        Další otázka →
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Results Screen -->
+        <section class="screen screen--results" id="screen-results">
+            <div class="results">
+                <div class="results__header">
+                    <div class="results__icon" id="results-icon">🏆</div>
+                    <h2 class="results__title" id="results-title">Výborně!</h2>
+                </div>
+
+                <div class="results__score">
+                    <div class="score-circle">
+                        <svg viewBox="0 0 100 100">
+                            <circle class="score-circle__bg" cx="50" cy="50" r="45" />
+                            <circle class="score-circle__progress" cx="50" cy="50" r="45" id="score-circle" />
+                        </svg>
+                        <div class="score-circle__text">
+                            <span class="score-circle__percent" id="score-percent">0%</span>
+                        </div>
+                    </div>
+                    <p class="results__score-text">
+                        <span id="correct-count">0</span> z <span id="total-count">0</span> správně
+                    </p>
+                </div>
+
+                <div class="results__stats">
+                    <div class="result-stat">
+                        <span class="result-stat__icon">✅</span>
+                        <span class="result-stat__value" id="stat-correct">0</span>
+                        <span class="result-stat__label">Správně</span>
+                    </div>
+                    <div class="result-stat">
+                        <span class="result-stat__icon">❌</span>
+                        <span class="result-stat__value" id="stat-wrong">0</span>
+                        <span class="result-stat__label">Špatně</span>
+                    </div>
+                    <div class="result-stat">
+                        <span class="result-stat__icon">⏱️</span>
+                        <span class="result-stat__value" id="stat-time">0:00</span>
+                        <span class="result-stat__label">Čas</span>
+                    </div>
+                </div>
+
+                <div id="results-review" class="results__review hidden">
+                    <!-- Review items will be injected here -->
+                </div>
+
+                <div class="results__actions">
+                    <button class="action-btn action-btn--primary" id="retry-btn">
+                        🔄 Zkusit znovu
+                    </button>
+                    <button class="action-btn action-btn--secondary" id="home-btn">
+                        🏠 Domů
+                    </button>
+                </div>
+        </section>
+    </main>
+
+    <script src="questions.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
