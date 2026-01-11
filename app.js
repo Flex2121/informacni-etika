@@ -462,7 +462,7 @@ class QuizApp {
             else {
                 if (!this.answered) {
                     // Selecting Answer
-                    if (['Digit1', 'Digit2', 'Digit3', 'Digit4'].includes(e.code)) {
+                    if (['Digit1', 'Digit2', 'Digit3'].includes(e.code)) {
                         const index = parseInt(e.key) - 1;
                         this.selectAnswer(index);
                     }
@@ -629,7 +629,7 @@ class QuizApp {
             document.getElementById('question-text').textContent = question.question;
 
             // Prepare Answers (Standard Logic)
-            const answerIndices = [0, 1, 2, 3];
+            const answerIndices = Array.from(Array(question.answers.length).keys());
             const shuffledIndices = this.shuffle(answerIndices);
             this.correctAnswerIndex = shuffledIndices.indexOf(question.correct);
 
